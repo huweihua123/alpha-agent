@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weihua.infrastructure.dao.IStrategyInstanceDao">
+
+    <resultMap id="BaseResultMap" type="com.weihua.infrastructure.dao.po.StrategyInstancePO">
+        <id column="id" property="id" />
+        <result column="strategy_id" property="strategyId" />
+        <result column="user_id" property="userId" />
+        <result column="strategy_name" property="strategyName" />
+        <result column="strategy_type" property="strategyType" />
+        <result column="status" property="status" />
+        <result column="exchange_id" property="exchangeId" />
+        <result column="trading_mode" property="tradingMode" />
+        <result column="interval_seconds" property="intervalSeconds" />
+        <result column="template_id" property="templateId" />
+        <result column="prompt_text" property="promptText" />
+        <result column="config_json" property="configJson" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, strategy_id, user_id, strategy_name, strategy_type, status, exchange_id, trading_mode, interval_seconds, template_id, prompt_text, config_json, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weihua.infrastructure.dao.po.StrategyInstancePO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_strategy_instances (
+            strategy_id, user_id, strategy_name, strategy_type, status, exchange_id, trading_mode, interval_seconds, template_id, prompt_text, config_json, create_time, update_time
+        ) VALUES (
+            #{strategyId}, #{userId}, #{strategyName}, #{strategyType}, #{status}, #{exchangeId}, #{tradingMode}, #{intervalSeconds}, #{templateId}, #{promptText}, #{configJson}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE t_strategy_instances
+        SET status = #{status}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatusByStrategyId">
+        UPDATE t_strategy_instances
+        SET status = #{status}, update_time = NOW()
+        WHERE strategy_id = #{strategyId}
+    </update>
+
+    <update id="updateConfig">
+        UPDATE t_strategy_instances
+        SET config_json = #{configJson}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateConfigByStrategyId">
+        UPDATE t_strategy_instances
+        SET config_json = #{configJson}, update_time = NOW()
+        WHERE strategy_id = #{strategyId}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_instances
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByStrategyId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_instances
+        WHERE strategy_id = #{strategyId}
+    </select>
+
+    <select id="selectByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_instances
+        WHERE status = #{status}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_instances
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectByUserIdAndStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_instances
+        WHERE user_id = #{userId} AND status = #{status}
+    </select>
+
+</mapper>

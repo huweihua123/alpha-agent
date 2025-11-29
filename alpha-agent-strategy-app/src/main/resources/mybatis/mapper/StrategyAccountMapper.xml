@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weihua.infrastructure.dao.IStrategyAccountDao">
+
+    <resultMap id="BaseResultMap" type="com.weihua.infrastructure.dao.po.StrategyAccountPO">
+        <id column="id" property="id" />
+        <result column="strategy_instance_id" property="strategyInstanceId" />
+        <result column="currency" property="currency" />
+        <result column="balance" property="balance" />
+        <result column="frozen" property="frozen" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, strategy_instance_id, currency, balance, frozen, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weihua.infrastructure.dao.po.StrategyAccountPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_strategy_accounts (
+            strategy_instance_id, currency, balance, frozen, create_time, update_time
+        ) VALUES (
+            #{strategyInstanceId}, #{currency}, #{balance}, #{frozen}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateBalance" parameterType="com.weihua.infrastructure.dao.po.StrategyAccountPO">
+        UPDATE t_strategy_accounts
+        SET balance = #{balance}, frozen = #{frozen}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByStrategyIdAndCurrency" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_accounts
+        WHERE strategy_instance_id = #{strategyInstanceId} AND currency = #{currency}
+    </select>
+
+</mapper>

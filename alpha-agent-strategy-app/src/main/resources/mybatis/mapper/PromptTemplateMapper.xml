@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weihua.infrastructure.dao.IPromptTemplateDao">
+
+    <resultMap id="BaseResultMap" type="com.weihua.infrastructure.dao.po.PromptTemplatePO">
+        <id column="id" property="id" />
+        <result column="template_id" property="templateId" />
+        <result column="name" property="name" />
+        <result column="description" property="description" />
+        <result column="content" property="content" />
+        <result column="category" property="category" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, template_id, name, description, content, category, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weihua.infrastructure.dao.po.PromptTemplatePO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_prompt_templates (
+            template_id, name, description, content, category, create_time, update_time
+        ) VALUES (
+            #{templateId}, #{name}, #{description}, #{content}, #{category}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.weihua.infrastructure.dao.po.PromptTemplatePO">
+        UPDATE t_prompt_templates
+        SET name = #{name},
+            description = #{description},
+            content = #{content},
+            category = #{category},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_prompt_templates WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_prompt_templates
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByTemplateId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_prompt_templates
+        WHERE template_id = #{templateId}
+    </select>
+
+    <select id="selectByCategory" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_prompt_templates
+        WHERE category = #{category}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_prompt_templates
+    </select>
+
+</mapper>

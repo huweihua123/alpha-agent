@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weihua.infrastructure.dao.IStrategyPositionDao">
+
+    <resultMap id="BaseResultMap" type="com.weihua.infrastructure.dao.po.StrategyPositionPO">
+        <id column="id" property="id" />
+        <result column="strategy_instance_id" property="strategyInstanceId" />
+        <result column="symbol" property="symbol" />
+        <result column="quantity" property="quantity" />
+        <result column="avg_price" property="avgPrice" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, strategy_instance_id, symbol, quantity, avg_price, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weihua.infrastructure.dao.po.StrategyPositionPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_strategy_positions (
+            strategy_instance_id, symbol, quantity, avg_price, create_time, update_time
+        ) VALUES (
+            #{strategyInstanceId}, #{symbol}, #{quantity}, #{avgPrice}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updatePosition" parameterType="com.weihua.infrastructure.dao.po.StrategyPositionPO">
+        UPDATE t_strategy_positions
+        SET quantity = #{quantity}, avg_price = #{avgPrice}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByStrategyIdAndSymbol" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_positions
+        WHERE strategy_instance_id = #{strategyInstanceId} AND symbol = #{symbol}
+    </select>
+
+    <select id="selectByStrategyId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_strategy_positions
+        WHERE strategy_instance_id = #{strategyInstanceId}
+    </select>
+
+</mapper>

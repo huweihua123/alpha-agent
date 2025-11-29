@@ -1,0 +1,55 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VS Code
+.vscode/
+
+# Mac OS
+.DS_Store
+
+# Sensitive Files
+*.bak
+*.log
+logs/
+data/
+application-dev.yml.bak
+application-prod.yml
+application-test.yml
+
+# Docs (Exclude all docs except README.md and SQL scripts)
+docs/
+!docs/dev-ops/mysql/sql/alpha-strategy.sql
+*.md
+!README.md
+
+# Scripts
+test_strategy.sh
+test_user_isolation.sh

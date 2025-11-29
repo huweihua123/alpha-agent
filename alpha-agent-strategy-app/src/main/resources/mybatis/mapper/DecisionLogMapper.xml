@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weihua.infrastructure.dao.IDecisionLogDao">
+
+    <resultMap id="BaseResultMap" type="com.weihua.infrastructure.dao.po.DecisionLogPO">
+        <id column="id" property="id" />
+        <result column="strategy_instance_id" property="strategyInstanceId" />
+        <result column="cycle_id" property="cycleId" />
+        <result column="prompt_snapshot" property="promptSnapshot" />
+        <result column="llm_response_json" property="llmResponseJson" />
+        <result column="rationale" property="rationale" />
+        <result column="instructions_json" property="instructionsJson" />
+        <result column="decision_time" property="decisionTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, strategy_instance_id, cycle_id, prompt_snapshot, llm_response_json, rationale, instructions_json, decision_time, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weihua.infrastructure.dao.po.DecisionLogPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_decision_logs (
+            strategy_instance_id, cycle_id, prompt_snapshot, llm_response_json, rationale, instructions_json, decision_time, create_time, update_time
+        ) VALUES (
+            #{strategyInstanceId}, #{cycleId}, #{promptSnapshot}, #{llmResponseJson}, #{rationale}, #{instructionsJson}, #{decisionTime}, NOW(), NOW()
+        )
+    </insert>
+
+    <select id="selectByStrategyId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_decision_logs
+        WHERE strategy_instance_id = #{strategyInstanceId}
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>

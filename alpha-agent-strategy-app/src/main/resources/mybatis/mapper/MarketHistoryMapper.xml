@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weihua.infrastructure.dao.IMarketHistoryDao">
+
+    <resultMap id="BaseResultMap" type="com.weihua.infrastructure.dao.po.MarketHistoryPO">
+        <id column="id" property="id" />
+        <result column="strategy_instance_id" property="strategyInstanceId" />
+        <result column="symbol" property="symbol" />
+        <result column="price" property="price" />
+        <result column="rsi" property="rsi" />
+        <result column="funding_rate" property="fundingRate" />
+        <result column="indicators_json" property="indicatorsJson" />
+        <result column="recorded_at" property="recordedAt" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, strategy_instance_id, symbol, price, rsi, funding_rate, indicators_json, recorded_at, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weihua.infrastructure.dao.po.MarketHistoryPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_market_history (
+            strategy_instance_id, symbol, price, rsi, funding_rate, indicators_json, recorded_at, create_time, update_time
+        ) VALUES (
+            #{strategyInstanceId}, #{symbol}, #{price}, #{rsi}, #{fundingRate}, #{indicatorsJson}, #{recordedAt}, NOW(), NOW()
+        )
+    </insert>
+
+    <select id="selectByStrategyId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_market_history
+        WHERE strategy_instance_id = #{strategyInstanceId}
+        ORDER BY recorded_at DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,170 @@
+server:
+  port: 8094
+  address: 127.0.0.1
+
+# 线程池配置
+thread:
+  pool:
+    executor:
+      config:
+        core-pool-size: 20
+        max-pool-size: 50
+        keep-alive-time: 5000
+        block-queue-size: 5000
+        policy: CallerRunsPolicy
+
+# 数据库配置
+spring:
+  application:
+    name: valuecell-strategy-agent
+  cloud:
+    nacos:
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        refresh-enabled: true # 开启配置动态刷新
+        # 扩展配置:LLM 配置
+        extension-configs:
+          - data-id: valuecell-dev.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:valuecell-strategy}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    hikari:
+      pool-name: Strategy_HikariCP
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY:}
+      chat:
+        options:
+          model: ${DASHSCOPE_MODEL:qwen-plus}
+    openai:
+      api-key: ${DEEPSEEK_API_KEY:}
+      base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+      chat:
+        options:
+          model: ${DEEPSEEK_MODEL:deepseek-chat}
+    alibaba:
+      # A2A Server 配置
+      a2a:
+        enabled: false # 禁用 A2A 功能
+        nacos:
+          server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+          username: ${NACOS_USERNAME:nacos}
+          password: ${NACOS_PASSWORD:nacos}
+          discovery:
+            enabled: false
+        server:
+          version: 1.0.0
+          card:
+            name: strategy_agent
+            description: 策略交易智能体，负责根据市场数据和策略配置执行自动交易
+            provider:
+              name: ValueCell
+              organization: ValueCell
+              url: https://valuecell.com
+              contact:
+                email: support@valuecell.com
+
+      # Agent Proxy 配置
+      agent:
+        proxy:
+          nacos:
+            enabled: true
+            serverAddr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+            username: ${NACOS_USERNAME:nacos}
+            password: ${NACOS_PASSWORD:nacos}
+            namespace: ${NACOS_NAMESPACE:public}
+            agentName: strategy_agent
+            promptKey: strategy-agent
+            encrypted: false
+            promptEncrypted: false
+
+    mcp:
+      client:
+        streamable-http:
+          connections:
+            stock-mcp:
+              url: ${STOCK_MCP_URL:http://127.0.0.1:9898}
+              endpoint: /mcp/
+
+# Stock MCP HTTP 服务配置
+stock-mcp:
+  base-url: ${STOCK_MCP_URL:http://localhost:9898}
+
+# ==========================================
+# LLM 配置 - 本地兜底配置 (防止 Nacos 拉取失败)
+# ==========================================
+app:
+  llm:
+    default-model: deepseek-v3
+    
+    # 1. 定义渠道 (Providers)
+    providers:
+      deepseek-official:
+        type: openai
+        api-key: ${DEEPSEEK_API_KEY:}
+        base-url: https://api.deepseek.com
+        
+      dashscope-compatible:
+        type: openai
+        api-key: ${DASHSCOPE_API_KEY:}
+        base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+
+    # 2. 定义模型 (Models)
+    models:
+      - id: deepseek-v3
+        display-name: "DeepSeek V3"
+        provider-ref: deepseek-official
+        model-name: deepseek-chat
+        temperature: 0.7
+        
+      - id: qwen-plus
+        display-name: "Qwen Plus"
+        provider-ref: dashscope-compatible
+        model-name: qwen-plus
+        temperature: 0.7
+
+# Agent Prompts
+agent:
+  prompts:
+    strategy-agent-instruction: classpath:prompts/strategy-agent-system.st
+
+# Strategy Scheduler Configuration
+strategy:
+  scheduler:
+    enabled: true
+    fixed-rate: 60000 # 60秒执行一次
+
+# MyBatis 配置
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: com.weihua.infrastructure.dao.po
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# 日志
+logging:
+  level:
+    root: INFO
+    io.modelcontextprotocol: WARN
+    org.springframework.ai.mcp: DEBUG
+    com.weihua.agent.strategy: DEBUG
+    com.weihua.infrastructure: DEBUG
+    com.weihua.strategy.domain: DEBUG
+  config: classpath:logback-spring.xml

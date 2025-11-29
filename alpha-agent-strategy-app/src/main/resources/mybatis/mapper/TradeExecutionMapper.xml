@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weihua.infrastructure.dao.ITradeExecutionDao">
+
+    <resultMap id="BaseResultMap" type="com.weihua.infrastructure.dao.po.TradeExecutionPO">
+        <id column="id" property="id" />
+        <result column="instruction_id" property="instructionId" />
+        <result column="strategy_instance_id" property="strategyInstanceId" />
+        <result column="decision_log_id" property="decisionLogId" />
+        <result column="symbol" property="symbol" />
+        <result column="action" property="action" />
+        <result column="quantity" property="quantity" />
+        <result column="price" property="price" />
+        <result column="fee" property="fee" />
+        <result column="status" property="status" />
+        <result column="execution_result_json" property="executionResultJson" />
+        <result column="error_message" property="errorMessage" />
+        <result column="execution_time" property="executionTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, instruction_id, strategy_instance_id, decision_log_id, symbol, action, quantity, price, fee, status, execution_result_json, error_message, execution_time, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weihua.infrastructure.dao.po.TradeExecutionPO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_trade_executions (
+            instruction_id, strategy_instance_id, decision_log_id, symbol, action, quantity, price, fee, status, execution_result_json, error_message, execution_time, create_time, update_time
+        ) VALUES (
+            #{instructionId}, #{strategyInstanceId}, #{decisionLogId}, #{symbol}, #{action}, #{quantity}, #{price}, #{fee}, #{status}, #{executionResultJson}, #{errorMessage}, #{executionTime}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE t_trade_executions
+        SET status = #{status}, execution_result_json = #{executionResultJson}, error_message = #{errorMessage}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByInstructionId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_trade_executions
+        WHERE instruction_id = #{instructionId}
+    </select>
+
+    <select id="selectByStrategyId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_trade_executions
+        WHERE strategy_instance_id = #{strategyInstanceId}
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>
